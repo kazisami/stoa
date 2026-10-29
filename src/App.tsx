@@ -333,17 +333,17 @@ export default function App() {
               onClick={() => handleSelectAuthor(activeQuote.author)}
               aria-label={`Show only quotes by ${activeQuote.author}`}
               title={`Show only quotes by ${activeQuote.author}`}
-              className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 active:scale-95 cursor-pointer ${
+              className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 active:scale-95 cursor-pointer border-0 outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0 active:outline-none active:ring-0 ${
                 selectedAuthor === activeQuote.author
                   ? isParchment
-                    ? 'bg-black/5 ring-1 ring-[#c89d66]/40'
-                    : 'bg-white/10 ring-1 ring-[#c89d66]/50'
+                    ? 'bg-black/5'
+                    : 'bg-white/10'
                   : isParchment
                   ? 'hover:bg-black/5'
                   : 'hover:bg-white/10'
               }`}
             >
-              <cite className="not-italic text-base sm:text-lg font-semibold tracking-wide text-[#c89d66] border-b border-[#c89d66]/30 group-hover:border-[#c89d66] transition-colors">
+              <cite className="not-italic text-base sm:text-lg font-semibold tracking-wide text-[#c89d66] transition-colors no-underline border-0 outline-none">
                 {activeQuote.author}
               </cite>
             </button>
