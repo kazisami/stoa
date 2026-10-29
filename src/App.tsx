@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Quote, STOIC_QUOTES } from './data/stoicData';
 import {
+  filterQuotesByAuthor,
   getNextIndex,
   getPrevIndex,
   getRandomIndex,
@@ -55,10 +56,19 @@ export default function App() {
   });
 
   // Shuffle quote ordering randomly every time the app loads
-  const quotesList = useMemo(() => {
+  const allShuffledQuotes = useMemo(() => {
     if (!STOIC_QUOTES || STOIC_QUOTES.length === 0) return [FALLBACK_QUOTE];
     return shuffleQuotes(STOIC_QUOTES);
   }, []);
+
+  // Selected Thinker Filter (null = show all quotes)
+  const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);
+
+  // Active quotes list: filtered by selectedAuthor if set, otherwise all shuffled quotes
+  const quotesList = useMemo(() => {
+    if (!selectedAuthor) return allShuffledQuotes;
+    return filterQuotesByAuthor(allShuffledQuotes, selectedAuthor);
+  }, [allShuffledQuotes, selectedAuthor]);
 
   // Pick a random starting quote on load (never starts from the same quote)
   const [currentIndex, setCurrentIndex] = useState<number>(() => {
@@ -173,11 +183,40 @@ export default function App() {
     setSavedIds((prev) => toggleSaveQuoteId(prev, quoteId));
   };
 
+  // Select a thinker to filter quotes by author only
+  const handleSelectAuthor = useCallback((author: string) => {
+    if (!author) return;
+    const authorQuotes = filterQuotesByAuthor(allShuffledQuotes, author);
+    if (authorQuotes.length === 0) return;
+
+    const currentQuote = quotesList[currentIndex] || activeQuote;
+    const matchIdx = authorQuotes.findIndex((q) => q.id === currentQuote?.id);
+
+    setSelectedAuthor(author);
+    setCurrentIndex(matchIdx !== -1 ? matchIdx : 0);
+  }, [allShuffledQuotes, quotesList, currentIndex, activeQuote]);
+
+  // Clear thinker filter and return to all quotes
+  const handleClearAuthorFilter = useCallback(() => {
+    if (!selectedAuthor) return;
+    const currentQuote = quotesList[currentIndex] || activeQuote;
+    const matchIdx = allShuffledQuotes.findIndex((q) => q.id === currentQuote?.id);
+
+    setSelectedAuthor(null);
+    setCurrentIndex(matchIdx !== -1 ? matchIdx : 0);
+  }, [selectedAuthor, quotesList, currentIndex, activeQuote, allShuffledQuotes]);
+
   // Select quote from saved drawer
   const handleSelectSaved = (quoteId: string) => {
-    const idx = quotesList.findIndex((q) => q.id === quoteId);
-    if (idx !== -1) {
-      setCurrentIndex(idx);
+    const inCurrentListIdx = quotesList.findIndex((q) => q.id === quoteId);
+    if (inCurrentListIdx !== -1) {
+      setCurrentIndex(inCurrentListIdx);
+    } else {
+      setSelectedAuthor(null);
+      const inAllIdx = allShuffledQuotes.findIndex((q) => q.id === quoteId);
+      if (inAllIdx !== -1) {
+        setCurrentIndex(inAllIdx);
+      }
     }
     setShowSavedDrawer(false);
   };
@@ -207,10 +246,31 @@ export default function App() {
     >
       {/* Top Header: Pure, clean, minimalist */}
       <header className="pt-safe px-6 sm:px-10 flex items-center justify-between z-20 shrink-0">
-        {/* Subtle Stoa wordmark */}
-        <span className="font-quote text-xl tracking-tight opacity-40 font-medium">
-          Stoa
-        </span>
+        {/* Top Left: Cross button when filtered, or subtle Stoa wordmark when viewing all quotes */}
+        {selectedAuthor ? (
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handleClearAuthorFilter}
+              aria-label="Back to all quotes"
+              title="Back to all quotes"
+              className={`min-w-[44px] min-h-[44px] px-2.5 -ml-2 rounded-full flex items-center gap-2 transition-transform active:scale-90 ${
+                isParchment
+                  ? 'bg-black/5 hover:bg-black/10 text-stone-800 border border-black/10'
+                  : 'bg-white/10 hover:bg-white/15 text-stone-200 border border-white/15'
+              }`}
+            >
+              <X className="w-4 h-4 text-[#c89d66]" />
+              <span className="text-xs font-serif tracking-tight font-medium opacity-85 max-w-[120px] truncate sm:max-w-none">
+                {selectedAuthor}
+              </span>
+            </button>
+          </div>
+        ) : (
+          <span className="font-quote text-xl tracking-tight opacity-40 font-medium">
+            Stoa
+          </span>
+        )}
 
         {/* Top Right: Theme Toggle and Saved Quotes Trigger */}
         <div className="flex items-center gap-2">
@@ -266,11 +326,27 @@ export default function App() {
             </p>
           </blockquote>
 
-          {/* Who Said It */}
+          {/* Who Said It - Click to filter quotes by this thinker */}
           <div className="mt-8 pt-2 flex flex-col items-center justify-center">
-            <cite className="not-italic text-base sm:text-lg font-semibold tracking-wide text-[#c89d66]">
-              {activeQuote.author}
-            </cite>
+            <button
+              type="button"
+              onClick={() => handleSelectAuthor(activeQuote.author)}
+              aria-label={`Show only quotes by ${activeQuote.author}`}
+              title={`Show only quotes by ${activeQuote.author}`}
+              className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 active:scale-95 cursor-pointer ${
+                selectedAuthor === activeQuote.author
+                  ? isParchment
+                    ? 'bg-black/5 ring-1 ring-[#c89d66]/40'
+                    : 'bg-white/10 ring-1 ring-[#c89d66]/50'
+                  : isParchment
+                  ? 'hover:bg-black/5'
+                  : 'hover:bg-white/10'
+              }`}
+            >
+              <cite className="not-italic text-base sm:text-lg font-semibold tracking-wide text-[#c89d66] border-b border-[#c89d66]/30 group-hover:border-[#c89d66] transition-colors">
+                {activeQuote.author}
+              </cite>
+            </button>
             {activeQuote.source && (
               <span className="text-xs opacity-50 font-sans mt-1">
                 {activeQuote.source}

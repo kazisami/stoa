@@ -37,6 +37,21 @@ export function shuffleQuotes<T>(items: T[]): T[] {
 }
 
 /**
+ * Filter quotes by author name (case-insensitive)
+ */
+export function filterQuotesByAuthor<T extends { author: string }>(
+  quotes: T[],
+  author: string | null
+): T[] {
+  if (!author || !author.trim()) return quotes;
+  const target = author.trim().toLowerCase();
+  const filtered = quotes.filter(
+    (q) => q.author && q.author.trim().toLowerCase() === target
+  );
+  return filtered.length > 0 ? filtered : quotes;
+}
+
+/**
  * Pick a random index distinct from the current one
  */
 export function getRandomIndex(
@@ -50,3 +65,4 @@ export function getRandomIndex(
   }
   return next;
 }
+

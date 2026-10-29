@@ -8,6 +8,7 @@ A minimalist, distraction-free Stoic philosophy web app tailored for your iPhone
 
 - **Random Quote on Every Load**: Opens immediately to a fresh, randomized quote and shuffles the 366-quote deck so every session presents a unique sequence.
 - **Random Quote Jump Button**: Dedicated shuffle icon directly beside the Save bookmark to instantly jump to another random wisdom passage.
+- **Thinker Filter on Demand**: Tap any philosopher's name to instantly filter the deck to only their quotes; the numbering counter automatically updates to reflect their total, and a clean cross (✕) button appears on the top left to return to all quotes.
 - **Pristine, Minimalist Interface**: Pure focus on the quote, its author, and its source work—no clutter, ads, or distractions.
 - **Swipe to Browse**: Seamless touch swipe gestures (swipe left for next, swipe right for previous) crafted for one-handed mobile reading.
 - **366 Authentic Stoic Quotes**: A full year's worth of authentic passages sourced from *Meditations*, *Letters from a Stoic*, *Discourses*, *Enchiridion*, and classical fragments.

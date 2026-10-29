@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { STOIC_QUOTES } from '../data/stoicData';
 import {
+  filterQuotesByAuthor,
   getNextIndex,
   getPrevIndex,
   getRandomIndex,
@@ -43,3 +44,18 @@ test('getRandomIndex returns a valid distinct index', () => {
   assert.ok(idx >= 0 && idx < 10);
   assert.notEqual(idx, 3);
 });
+
+test('filterQuotesByAuthor filters quotes accurately and handles clearing', () => {
+  const mockQuotes = [
+    { id: '1', author: 'Marcus Aurelius', text: 'M1' },
+    { id: '2', author: 'Seneca', text: 'S1' },
+    { id: '3', author: 'Marcus Aurelius', text: 'M2' },
+  ];
+  const filtered = filterQuotesByAuthor(mockQuotes, 'Marcus Aurelius');
+  assert.equal(filtered.length, 2);
+  assert.ok(filtered.every((q) => q.author === 'Marcus Aurelius'));
+
+  const all = filterQuotesByAuthor(mockQuotes, null);
+  assert.equal(all.length, 3);
+});
+
