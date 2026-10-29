@@ -6,6 +6,8 @@ A minimalist, distraction-free Stoic philosophy web app tailored for your iPhone
 
 ## ✨ Features
 
+- **Random Quote on Every Load**: Opens immediately to a fresh, randomized quote and shuffles the 366-quote deck so every session presents a unique sequence.
+- **Random Quote Jump Button**: Dedicated shuffle icon directly beside the Save bookmark to instantly jump to another random wisdom passage.
 - **Pristine, Minimalist Interface**: Pure focus on the quote, its author, and its source work—no clutter, ads, or distractions.
 - **Swipe to Browse**: Seamless touch swipe gestures (swipe left for next, swipe right for previous) crafted for one-handed mobile reading.
 - **366 Authentic Stoic Quotes**: A full year's worth of authentic passages sourced from *Meditations*, *Letters from a Stoic*, *Discourses*, *Enchiridion*, and classical fragments.
@@ -14,9 +16,9 @@ A minimalist, distraction-free Stoic philosophy web app tailored for your iPhone
 - **iPhone Home Screen Ready (PWA)**:
   - Supports standalone full-screen web app mode (hides Safari browser chrome).
   - Configured with `apple-mobile-web-app-capable`, `apple-touch-icon`, and iOS safe area padding.
-  - 100% offline-capable via service worker precaching.
+  - 100% offline-capable.
 - **Obsidian Dark & Warm Parchment Themes**: One-tap toggle between nighttime obsidian and reading-friendly warm parchment.
-- **Desktop & Keyboard Support**: Navigate with Left/Right arrow keys or Spacebar.
+- **Desktop & Keyboard Support**: Navigate with Left/Right arrow keys, Spacebar, or press `R` for random quote.
 
 ---
 

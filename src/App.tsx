@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bookmark,
   ChevronLeft,
   ChevronRight,
   Copy,
   Moon,
+  Shuffle,
   Sun,
   X,
   Check,
@@ -13,12 +14,13 @@ import { Quote, STOIC_QUOTES } from './data/stoicData';
 import {
   getNextIndex,
   getPrevIndex,
+  getRandomIndex,
+  shuffleQuotes,
   toggleSaveQuoteId,
 } from './utils/stoicLogic';
 
 const STORAGE_SAVED_KEY = 'stoa_saved_quotes_v3';
 const STORAGE_THEME_KEY = 'stoa_theme_v3';
-const STORAGE_INDEX_KEY = 'stoa_index_v3';
 
 const FALLBACK_QUOTE: Quote = {
   id: 'quote-fallback',
@@ -52,16 +54,16 @@ export default function App() {
     return ['quote-1', 'quote-2'];
   });
 
-  const quotesList = STOIC_QUOTES && STOIC_QUOTES.length > 0 ? STOIC_QUOTES : [FALLBACK_QUOTE];
+  // Shuffle quote ordering randomly every time the app loads
+  const quotesList = useMemo(() => {
+    if (!STOIC_QUOTES || STOIC_QUOTES.length === 0) return [FALLBACK_QUOTE];
+    return shuffleQuotes(STOIC_QUOTES);
+  }, []);
 
+  // Pick a random starting quote on load (never starts from the same quote)
   const [currentIndex, setCurrentIndex] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_INDEX_KEY);
-      const idx = saved ? parseInt(saved, 10) : 0;
-      return idx >= 0 && idx < quotesList.length ? idx : 0;
-    } catch {
-      return 0;
-    }
+    const total = STOIC_QUOTES && STOIC_QUOTES.length > 0 ? STOIC_QUOTES.length : 1;
+    return Math.floor(Math.random() * total);
   });
 
   const [showSavedDrawer, setShowSavedDrawer] = useState<boolean>(false);
@@ -89,14 +91,6 @@ export default function App() {
     }
   }, [theme]);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_INDEX_KEY, currentIndex.toString());
-    } catch {
-      // ignore
-    }
-  }, [currentIndex]);
-
   // Next / Prev handlers
   const handleNext = useCallback(() => {
     if (animating) return;
@@ -114,6 +108,17 @@ export default function App() {
     setAnimating(true);
     setTimeout(() => {
       setCurrentIndex((prev) => getPrevIndex(prev, quotesList.length));
+      setAnimating(false);
+    }, 120);
+  }, [animating, quotesList.length]);
+
+  // Random quote handler
+  const handleRandom = useCallback(() => {
+    if (animating) return;
+    setSlideDirection('next');
+    setAnimating(true);
+    setTimeout(() => {
+      setCurrentIndex((prev) => getRandomIndex(prev, quotesList.length));
       setAnimating(false);
     }, 120);
   }, [animating, quotesList.length]);
@@ -154,11 +159,14 @@ export default function App() {
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         handlePrev();
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        handleRandom();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev, showSavedDrawer]);
+  }, [handleNext, handlePrev, handleRandom, showSavedDrawer]);
 
   // Toggle Save (Only Icon, no text)
   const handleToggleSave = (quoteId: string) => {
@@ -272,7 +280,7 @@ export default function App() {
         </div>
       </main>
 
-      {/* Bottom Bar: Touch Navigation & ONLY Save Icon (NO text 'Save') */}
+      {/* Bottom Bar: Touch Navigation, Random Quote Icon, ONLY Save Icon, and Next Button */}
       <footer className="pb-safe px-6 sm:px-12 flex items-center justify-between z-20 shrink-0">
         {/* Previous Button */}
         <button
@@ -303,9 +311,21 @@ export default function App() {
           </button>
         </div>
 
-        {/* Right: ONLY Save Icon (NO text) and Next Button */}
-        <div className="flex items-center gap-2">
-          {/* ONLY Save Icon */}
+        {/* Right Section: Random Icon on the left of Save Icon, then Next Button */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Random Quote Icon on the left of Save Icon */}
+          <button
+            type="button"
+            onClick={handleRandom}
+            aria-label="Random quote"
+            className={`min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-transform active:scale-90 ${
+              isParchment ? 'hover:bg-black/5 text-stone-600' : 'hover:bg-white/10 text-stone-400'
+            }`}
+          >
+            <Shuffle className="w-4 h-4" />
+          </button>
+
+          {/* ONLY Save Icon (NO text) */}
           <button
             type="button"
             onClick={() => handleToggleSave(activeQuote.id)}

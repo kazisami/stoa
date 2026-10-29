@@ -4,6 +4,8 @@ import { STOIC_QUOTES } from '../data/stoicData';
 import {
   getNextIndex,
   getPrevIndex,
+  getRandomIndex,
+  shuffleQuotes,
   toggleSaveQuoteId,
 } from './stoicLogic';
 
@@ -27,4 +29,17 @@ test('toggleSaveQuoteId adds and removes quote IDs', () => {
 
   const removed = toggleSaveQuoteId(added, 'quote-1');
   assert.deepEqual(removed, ['quote-2']);
+});
+
+test('shuffleQuotes preserves all items and randomizes ordering', () => {
+  const original = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const shuffled = shuffleQuotes(original);
+  assert.equal(shuffled.length, original.length);
+  assert.deepEqual([...shuffled].sort((a, b) => a - b), original);
+});
+
+test('getRandomIndex returns a valid distinct index', () => {
+  const idx = getRandomIndex(3, 10);
+  assert.ok(idx >= 0 && idx < 10);
+  assert.notEqual(idx, 3);
 });
