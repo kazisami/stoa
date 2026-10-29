@@ -4,6 +4,19 @@ A minimalist, distraction-free Stoic philosophy web app tailored for your iPhone
 
 ---
 
+## 🎬 Demo
+
+<div align="center">
+  <img src="assets/demo.gif" alt="Stoa App Walkthrough Demo" width="360" style="border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);" />
+  <p><sub><i>Recorded on mobile viewport showcasing swipe navigation, random jump, thinker filter toggle, saved drawer, and theme switching.</i></sub></p>
+  <p>
+    <a href="assets/demo.mp4">▶️ Watch MP4 Video</a> &bull; 
+    <a href="assets/demo.webm">▶️ Watch WebM Video</a>
+  </p>
+</div>
+
+---
+
 ## ✨ Features
 
 - **Random Quote on Every Load**: Opens immediately to a fresh, randomized quote and shuffles the 366-quote deck so every session presents a unique sequence.
