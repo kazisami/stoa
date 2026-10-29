@@ -1,0 +1,6 @@
+{
+  "name": "Stoa — Stoic Quotes",
+  "description": "Timeless Stoic wisdom designed for your iPhone Home Screen. Swipe through quotes from Marcus Aurelius, Seneca, Epictetus, and Zeno.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
