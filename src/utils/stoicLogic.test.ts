@@ -7,6 +7,7 @@ import {
   getPrevIndex,
   getRandomIndex,
   shuffleQuotes,
+  toggleAuthorFilter,
   toggleSaveQuoteId,
 } from './stoicLogic';
 
@@ -57,5 +58,23 @@ test('filterQuotesByAuthor filters quotes accurately and handles clearing', () =
 
   const all = filterQuotesByAuthor(mockQuotes, null);
   assert.equal(all.length, 3);
+});
+
+test('toggleAuthorFilter toggles author filter on and off', () => {
+  // First click sets the author filter
+  const selected = toggleAuthorFilter(null, 'Marcus Aurelius');
+  assert.equal(selected, 'Marcus Aurelius');
+
+  // Clicking a different author switches filter
+  const switched = toggleAuthorFilter('Marcus Aurelius', 'Seneca');
+  assert.equal(switched, 'Seneca');
+
+  // Clicking the same author toggles back to null (all quotes)
+  const toggledOff = toggleAuthorFilter('Seneca', 'Seneca');
+  assert.equal(toggledOff, null);
+
+  // Case-insensitive toggle off
+  const caseInsensitiveOff = toggleAuthorFilter('Epictetus', 'epictetus');
+  assert.equal(caseInsensitiveOff, null);
 });
 

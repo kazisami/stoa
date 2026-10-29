@@ -17,6 +17,7 @@ import {
   getPrevIndex,
   getRandomIndex,
   shuffleQuotes,
+  toggleAuthorFilter,
   toggleSaveQuoteId,
 } from './utils/stoicLogic';
 
@@ -183,27 +184,26 @@ export default function App() {
     setSavedIds((prev) => toggleSaveQuoteId(prev, quoteId));
   };
 
-  // Select a thinker to filter quotes by author only
+  // Select a thinker to filter quotes by author only, or click again to return to all quotes
   const handleSelectAuthor = useCallback((author: string) => {
     if (!author) return;
-    const authorQuotes = filterQuotesByAuthor(allShuffledQuotes, author);
-    if (authorQuotes.length === 0) return;
 
     const currentQuote = quotesList[currentIndex] || activeQuote;
-    const matchIdx = authorQuotes.findIndex((q) => q.id === currentQuote?.id);
+    const nextAuthor = toggleAuthorFilter(selectedAuthor, author);
 
-    setSelectedAuthor(author);
-    setCurrentIndex(matchIdx !== -1 ? matchIdx : 0);
-  }, [allShuffledQuotes, quotesList, currentIndex, activeQuote]);
+    if (!nextAuthor) {
+      // Toggle back to all quotes
+      setSelectedAuthor(null);
+      const matchIdx = allShuffledQuotes.findIndex((q) => q.id === currentQuote?.id);
+      setCurrentIndex(matchIdx !== -1 ? matchIdx : 0);
+    } else {
+      const authorQuotes = filterQuotesByAuthor(allShuffledQuotes, nextAuthor);
+      if (authorQuotes.length === 0) return;
 
-  // Clear thinker filter and return to all quotes
-  const handleClearAuthorFilter = useCallback(() => {
-    if (!selectedAuthor) return;
-    const currentQuote = quotesList[currentIndex] || activeQuote;
-    const matchIdx = allShuffledQuotes.findIndex((q) => q.id === currentQuote?.id);
-
-    setSelectedAuthor(null);
-    setCurrentIndex(matchIdx !== -1 ? matchIdx : 0);
+      const matchIdx = authorQuotes.findIndex((q) => q.id === currentQuote?.id);
+      setSelectedAuthor(nextAuthor);
+      setCurrentIndex(matchIdx !== -1 ? matchIdx : 0);
+    }
   }, [selectedAuthor, quotesList, currentIndex, activeQuote, allShuffledQuotes]);
 
   // Select quote from saved drawer
@@ -246,31 +246,10 @@ export default function App() {
     >
       {/* Top Header: Pure, clean, minimalist */}
       <header className="pt-safe px-6 sm:px-10 flex items-center justify-between z-20 shrink-0">
-        {/* Top Left: Cross button when filtered, or subtle Stoa wordmark when viewing all quotes */}
-        {selectedAuthor ? (
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={handleClearAuthorFilter}
-              aria-label="Back to all quotes"
-              title="Back to all quotes"
-              className={`min-w-[44px] min-h-[44px] px-2.5 -ml-2 rounded-full flex items-center gap-2 transition-transform active:scale-90 ${
-                isParchment
-                  ? 'bg-black/5 hover:bg-black/10 text-stone-800 border border-black/10'
-                  : 'bg-white/10 hover:bg-white/15 text-stone-200 border border-white/15'
-              }`}
-            >
-              <X className="w-4 h-4 text-[#c89d66]" />
-              <span className="text-xs font-serif tracking-tight font-medium opacity-85 max-w-[120px] truncate sm:max-w-none">
-                {selectedAuthor}
-              </span>
-            </button>
-          </div>
-        ) : (
-          <span className="font-quote text-xl tracking-tight opacity-40 font-medium">
-            Stoa
-          </span>
-        )}
+        {/* Top Left: Clean Stoa wordmark */}
+        <span className="font-quote text-xl tracking-tight opacity-40 font-medium">
+          Stoa
+        </span>
 
         {/* Top Right: Theme Toggle and Saved Quotes Trigger */}
         <div className="flex items-center gap-2">
@@ -326,13 +305,21 @@ export default function App() {
             </p>
           </blockquote>
 
-          {/* Who Said It - Click to filter quotes by this thinker */}
+          {/* Who Said It - Click to filter quotes by this thinker, or click again to show all quotes */}
           <div className="mt-8 pt-2 flex flex-col items-center justify-center">
             <button
               type="button"
               onClick={() => handleSelectAuthor(activeQuote.author)}
-              aria-label={`Show only quotes by ${activeQuote.author}`}
-              title={`Show only quotes by ${activeQuote.author}`}
+              aria-label={
+                selectedAuthor === activeQuote.author
+                  ? 'Show all quotes'
+                  : `Show only quotes by ${activeQuote.author}`
+              }
+              title={
+                selectedAuthor === activeQuote.author
+                  ? 'Show all quotes'
+                  : `Show only quotes by ${activeQuote.author}`
+              }
               className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 active:scale-95 cursor-pointer border-0 outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0 active:outline-none active:ring-0 ${
                 selectedAuthor === activeQuote.author
                   ? isParchment

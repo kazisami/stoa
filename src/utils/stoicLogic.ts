@@ -52,6 +52,24 @@ export function filterQuotesByAuthor<T extends { author: string }>(
 }
 
 /**
+ * Toggle author filter: if clicking the currently filtered author, returns null (all quotes),
+ * otherwise returns the selected author.
+ */
+export function toggleAuthorFilter(
+  currentSelectedAuthor: string | null,
+  clickedAuthor: string
+): string | null {
+  if (!clickedAuthor) return currentSelectedAuthor;
+  if (
+    currentSelectedAuthor &&
+    currentSelectedAuthor.trim().toLowerCase() === clickedAuthor.trim().toLowerCase()
+  ) {
+    return null;
+  }
+  return clickedAuthor;
+}
+
+/**
  * Pick a random index distinct from the current one
  */
 export function getRandomIndex(
