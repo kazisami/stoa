@@ -52,7 +52,7 @@ A minimalist, distraction-free Stoic philosophy web app tailored for your iPhone
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/stoa-quotes.git
+   git clone https://github.com/kazisami/stoa-quotes.git
    cd stoa-quotes
    ```
 
@@ -79,6 +79,13 @@ A minimalist, distraction-free Stoic philosophy web app tailored for your iPhone
 
 ---
 
+## 👤 Author
+
+Created by [@kazisami](https://github.com/kazisami).
+
+---
+
 ## 📜 License
 
 Apache-2.0
+
